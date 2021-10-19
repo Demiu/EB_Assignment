@@ -2,16 +2,18 @@ version: "3.9"
 services:
   db:
     image: mysql:5.7
-    ports:
-      - "3306"
     environment:
       MYSQL_DATABASE: prestashop
       MYSQL_ROOT_PASSWORD: prestashop
     #restart: always
+    volumes:
+      - ./volumes/db/var/lib/mysql:/var/lib/mysql
   presta:
     image: prestashop/prestashop:1.7
     environment:
       PS_INSTALL_AUTO: 1
+      PS_FOLDER_ADMIN: admin123456
+      PS_FOLDER_INSTALL: admin123456
       ADMIN_MAIL: prestashop@prestashop.pl
       ADMIN_PASSWD: prestashop
       DB_USER: root
@@ -21,6 +23,8 @@ services:
       DB_PORT: 3306
     ports:
       - "8080:80"
+    volumes:
+      - ./volumes/presta/var/www/html:/var/www/html
     #restart: always
   adminer:
     image: adminer
