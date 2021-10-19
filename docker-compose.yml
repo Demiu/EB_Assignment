@@ -13,7 +13,7 @@ services:
     environment:
       PS_INSTALL_AUTO: 1
       PS_FOLDER_ADMIN: admin123456
-      PS_FOLDER_INSTALL: admin123456
+      PS_FOLDER_INSTALL: install123456
       ADMIN_MAIL: prestashop@prestashop.pl
       ADMIN_PASSWD: prestashop
       DB_USER: root
