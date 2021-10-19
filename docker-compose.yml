@@ -14,6 +14,7 @@ services:
       PS_INSTALL_AUTO: 1
       PS_FOLDER_ADMIN: admin123456
       PS_FOLDER_INSTALL: install123456
+      PS_HANDLE_DYNAMIC_DOMAIN: 1
       ADMIN_MAIL: prestashop@prestashop.pl
       ADMIN_PASSWD: prestashop
       DB_USER: root
