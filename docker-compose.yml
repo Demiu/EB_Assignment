@@ -5,9 +5,10 @@ services:
     environment:
       MYSQL_DATABASE: prestashop
       MYSQL_ROOT_PASSWORD: prestashop
-    #restart: always
+    restart: always
     volumes:
-      - ./volumes/db/var/lib/mysql:/var/lib/mysql
+      #- ./volumes/db/var/lib/mysql:/var/lib/mysql
+      - ./db-dumps:/docker-entrypoint-initdb.d
   presta:
     image: prestashop/prestashop:1.7
     environment:
