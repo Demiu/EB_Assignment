@@ -2,6 +2,9 @@ Zeby odpalic projekt trzeba najpierw pobrac projekt z githuba, nastepnie na fold
 z githuba zmienic permisje:
 sudo chmod +322 ./ -R
 Co da odpowiednie prawa wszystkim plikom.
+Aby potem było to automatycznie wykonwywane zmień konfigurację tego repozytorium:
+git config core.sharedRepository 0666
+
 Majac folder db-dumps i w nim plik backup.sql oraz reszte mozecie wpisac:
 sudo docker-compose up 
 i poczekajcie az beda ostatnie komunikaty od presty wtedy powinna na localhost:8080
