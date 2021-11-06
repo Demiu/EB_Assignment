@@ -1,6 +1,6 @@
 Zeby odpalic projekt trzeba najpierw pobrac projekt z githuba, nastepnie na folderze z plikami
-z githuba wpisac:
-sudo chmod +777 ./ -R
+z githuba zmienic permisje:
+sudo chmod +322 ./ -R
 Co da odpowiednie prawa wszystkim plikom.
 Majac folder db-dumps i w nim plik backup.sql oraz reszte mozecie wpisac:
 sudo docker-compose up 
