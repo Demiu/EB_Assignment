@@ -2,6 +2,7 @@
 
 from bs4 import BeautifulSoup
 import requests
+import os
 
 from Lamp import Lamp
 from Page import Page
@@ -113,6 +114,8 @@ products_id_url = "js-product-list"
 product_substring = "js-product-miniature-wrapper"
 id = 0
 
+
+os.makedirs(os.path.dirname('data/products.csv'), exist_ok = True)
 with open('data/products.csv', 'w', encoding='utf-8') as file:
     file.write("ID;Aktywny (0 lub 1);Nazwa;Kategorie (x,y,z…);Cena zawiera podatek. (brutto);ID reguły podatku;\
 Koszt własny;W sprzedaży (0 lub 1);Wartość rabatu;Procent rabatu;Rabat od dnia (rrrr-mm-dd);Rabat do dnia \
