@@ -1,2 +1,5 @@
+__pycache__/
+ *.pyc
+
 volumes/db
 volumes/presta/var/www/html/var/cache
