@@ -1,4 +1,3 @@
-import itertools
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -13,14 +12,14 @@ class Category:
         return f'Category "{self.name}" at {self.url}, under {self.parent_category}'
 
 
-def isCategoryLink(site_url, href):
-    b1 = href.startswith(site_url)
-    b2 = re.match(r'^.*\.pl/[0-9]+.*', href) is not None
-    return b1 and b2
+def is_category_link(site_url, href):
+    cond1 = href.startswith(site_url)
+    cond2 = re.match(r'^.*\.pl/[0-9]+.*', href) is not None
+    return cond1 and cond2
 
 
-def getCategories(site_url, default_parent_category):
-    is_cat_link_pred = lambda href: isCategoryLink(site_url, href)
+def get_categories(site_url, default_parent_category):
+    is_cat_link_pred = lambda href: is_category_link(site_url, href)
 
     page = requests.get(site_url)
     content = page.text
@@ -32,8 +31,8 @@ def getCategories(site_url, default_parent_category):
         .find_all(class_='cbp-hrmenu-tab'))
 
     categories = []
-    for e in banner_elems:
-        main_category = e.find('a', recursive=False, href=is_cat_link_pred)
+    for elem in banner_elems:
+        main_category = elem.find('a', recursive=False, href=is_cat_link_pred)
         if not main_category:
             continue
 
@@ -42,7 +41,7 @@ def getCategories(site_url, default_parent_category):
         categories.append(Category(mcat_url, mcat_name, default_parent_category))
 
         # skip the first element, since it was already added
-        for cat in e.find_all('a', href=is_cat_link_pred)[1:]:
+        for cat in elem.find_all('a', href=is_cat_link_pred)[1:]:
             cat_url = cat['href']
             cat_name = cat.get_text()
             categories.append(Category(cat_url, cat_name, mcat_name))
