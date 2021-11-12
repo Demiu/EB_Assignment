@@ -5,9 +5,9 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-from Lamp import *
-from Category import *
-from Combination import *
+from lamp import *
+from category import *
+from combination import *
 
 
 def getContent(url, prod_id):
