@@ -1,29 +1,45 @@
 #!/usr/bin/env python3
 
+import os
+import re
 from bs4 import BeautifulSoup
 import requests
-import os
 
 from Lamp import Lamp
-from Page import Page
+from Category import Category
 from Combination import Combination
 
-pages_urls = ["11-lampy-sufitowe-plafony", "10-lampy-wiszace-zyrandole", "13-lampy-scienne-kinkiety",
-              "14-lampki-stolowe-biurkowe", "15-lampy-podlogowe", "21-lampy-zewnetrzne-sufitowe",
-              "22-lampy-zewnetrzne-wiszace", "23-lampy-scienne-elewacyjne", "153-lampy-stojace-slupki",
-              "24-lampy-masztowe-latarnie", "4-zarowki-zrodla-swiatla"]
-pages_categories = ["Lampy sufitowe | plafony", "Lampy wiszące | żyrandole", "Lampy ścienne | kinkiety",
-                   "Lampki stołowe | biurkowe", "Lampy stojące podłogowe", "Lampy zewnętrzne sufitowe",
-                   "Lampy zewnętrzne wiszące", "Kinkiety ścienne i oświetlenie elewacyjne",
-                   "Lampy stojące ogrodowe i słupki ogrodowe", "Latarnie ogrodowe i dekoracyjne lampy masztowe",
-                   "Żarówki"]
+
+def isCategoryLink(href):
+    b1 = href.startswith(site_url)
+    b2 = re.match(r'^.*\.pl/[0-9]+.*', href) is not None
+    return b1 and b2
 
 
-def selectPages():
-    pages = []
-    for i in range(len(pages_urls)):
-        pages.append(Page(pages_urls[i], pages_categories[i]))
-    return pages
+def getCategories():
+    page = requests.get(site_url)
+    content = page.text
+    soup = BeautifulSoup(content, "html.parser")
+    banner_elems = soup.find('header').find(id='desktop-header').find('ul').find_all(class_='cbp-hrmenu-tab')
+
+    categories = []
+    for e in banner_elems:
+        main_category = e.find('a', recursive=False, href=isCategoryLink)
+        if not main_category:
+            continue
+
+        mcat_url = main_category['href']
+        mcat_name = main_category.select_one('span').get_text().strip()
+        categories.append(Category(mcat_url, mcat_name, default_parent_category))
+
+        # skip the first element, since it was already added
+        for cat in e.find_all('a', href=isCategoryLink)[1:]:
+            cat_url = cat['href']
+            cat_name = cat.get_text()
+            categories.append(Category(cat_url, cat_name, mcat_name))
+
+    # TODO remove duplicates
+    return categories
 
 
 def getContent(url, prod_id):
@@ -109,7 +125,8 @@ zdjęć (x,y,z...);ID / Nazwa sklepu;Zaawansowane zarządzanie magazynem;Zależn
 
 
 site_url = "https://mlamp.pl/"
-pages = selectPages()
+default_parent_category = 'Home'
+categories = getCategories()
 products_id_url = "js-product-list"
 product_substring = "js-product-miniature-wrapper"
 id = 0
@@ -136,16 +153,16 @@ file.close()
 id_start_combinations = []
 id_end_combinations = []
 
-for page in pages:
-    url = page.url
-    category = page.category
-    products = getContent(site_url + url, products_id_url)
+for category in categories:
+    url = category.url
+    category_name = category.name
+    products = getContent(url, products_id_url)
 
-    if page.category == "Lampy sufitowe | plafony":
+    if category.name == "Lampy sufitowe | plafony":
         id_start_combinations.append(id + 1)
         id_end_combinations.append(id + 1)
 
-    if page.category == "Lampy zewnętrzne sufitowe":
+    if category.name == "Lampy zewnętrzne sufitowe":
         id_start_combinations.append(id + 1)
         id_end_combinations.append(id + 1)
 
@@ -169,15 +186,15 @@ for page in pages:
 
         if amount != "0":
             id += 1
-            lamp = Lamp(id, lamp_name, category, price, delivery, producer, amount, technicalData, description, url, image_lamp, producer_logo)
+            lamp = Lamp(id, lamp_name, category_name, price, delivery, producer, amount, technicalData, description, url, image_lamp, producer_logo)
             product = "\n" + lamp.convertToCSV()
             with open('data/products.csv', 'a', encoding='utf-8') as file:
                 file.write(product)
 
-            if page.category == "Lampy sufitowe | plafony":
+            if category_name == "Lampy sufitowe | plafony":
                 id_end_combinations[0] = id
 
-            if page.category == "Lampy zewnętrzne sufitowe":
+            if category_name == "Lampy zewnętrzne sufitowe":
                 id_end_combinations[1] = id
 
     file.close()

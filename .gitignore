@@ -1,5 +1,7 @@
 __pycache__/
  *.pyc
 
+.vscode/
+
 volumes/db
 volumes/presta/var/www/html/var/cache
