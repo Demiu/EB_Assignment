@@ -9,6 +9,20 @@ from category import get_categories
 from combination import Combination
 
 
+CATEGORIES_HEADER = (
+"ID;\
+Active (0/1);\
+Name*;\
+Parent category;\
+Root category (0/1);\
+Description;\
+Meta title;\
+Meta keywords;\
+Meta description;\
+Rewritten URL;\
+Image URL;\
+ID / Name of shop")
+
 combinations_header = "ID;Indeks produktu;Atrybut (Nazwa:Typ:Pozycja)*;Wartość (Wartość:Pozycja)*;\
 Identyfikator dostawcy;Indeks;EAN13;UPC;MPN;Koszt własny;Wpływ na cenę;Podatek ekologiczny;Ilość;\
 Minimalna ilość;Niski poziom produktów w magazynie;Wyślij do mnie e-mail, gdy ilość jest poniżej \
@@ -105,7 +119,10 @@ def get_lamp_informations(main_section, section_product):
 
 def main():
     site_url = "https://mlamp.pl/"
+
     categories = get_categories(site_url, 'Home')
+    save_to_file('data/categories.csv', CATEGORIES_HEADER, categories)
+
     products_id_url = "js-product-list"
     product_substring = "js-product-miniature-wrapper"
     identifier = 0
@@ -137,8 +154,8 @@ def main():
             technical_data = get_technical_data(cards[1])
 
             identifier += 1
-            lamps.append(Lamp(identifier, lamp_name, category_name, price, delivery, producer, amount,
-                    technical_data, description, url, image_lamp, producer_logo))
+            lamps.append(Lamp(identifier, lamp_name, category_name, price, delivery, producer, 
+                amount,technical_data, description, url, image_lamp, producer_logo))
 
         lamps = [lamp for lamp in lamps if lamp.amount != "0"]
         save_to_file('data/products.csv', products_header, lamps)

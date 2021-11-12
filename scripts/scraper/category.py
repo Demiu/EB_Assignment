@@ -1,15 +1,39 @@
 import re
+import unicodedata
 import requests
 from bs4 import BeautifulSoup
 
 class Category:
-    def __init__(self, url, name, parent_category):
+    def __init__(self, identifier, url, name, parent_category):
+        self.identifier = identifier
         self.url = url
         self.name = name
         self.parent_category = parent_category
 
     def __str__(self):
         return f'Category "{self.name}" at {self.url}, under {self.parent_category}'
+
+    def convert_to_csv(self):
+        values = [
+            str(self.identifier),
+            '1', # Active
+            self.name,
+            self.parent_category,
+            '0', # Root Category
+            '', # Description
+            '', # Meta title
+            '', # Meta keywords
+            '', # Meta description
+            '-'.join( # Rewritten URL
+                re.findall(
+                    r'[a-zA-Z]+',
+                    unicodedata.normalize('NFD', self.name.lower())
+                        .encode('ascii', 'ignore')
+                        .decode('utf-8'))),
+            '', # Image URL
+            '', # ID / Name of shop
+        ]
+        return ';'.join(values)
 
 
 def is_category_link(site_url, href):
@@ -20,6 +44,7 @@ def is_category_link(site_url, href):
 
 def get_categories(site_url, default_parent_category):
     is_cat_link_pred = lambda href: is_category_link(site_url, href)
+    identifier = 100
 
     page = requests.get(site_url)
     content = page.text
@@ -38,19 +63,21 @@ def get_categories(site_url, default_parent_category):
 
         mcat_url = main_category['href']
         mcat_name = main_category.select_one('span').get_text().strip()
-        categories.append(Category(mcat_url, mcat_name, default_parent_category))
+        categories.append(Category(identifier, mcat_url, mcat_name, default_parent_category))
+        identifier += 1
 
         # skip the first element, since it was already added
         for cat in elem.find_all('a', href=is_cat_link_pred)[1:]:
             cat_url = cat['href']
             cat_name = cat.get_text()
-            categories.append(Category(cat_url, cat_name, mcat_name))
+            categories.append(Category(identifier, cat_url, cat_name, mcat_name))
+            identifier += 1
 
     # remove duplicates, overwrite sub categories with top level ones
-    unique_categories = {cat.name: cat for cat in categories}
+    unique_categories = {cat.url: cat for cat in categories}
     for cat in categories:
-        if (cat.name == default_parent_category
-        and unique_categories[cat.name] != default_parent_category):
-            unique_categories[cat.name] = cat
+        if (cat.parent_category == default_parent_category
+        and unique_categories[cat.url].parent_category != default_parent_category):
+            unique_categories[cat.url] = cat
 
     return list(unique_categories.values())
