@@ -5,41 +5,9 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-from Lamp import Lamp
-from Category import Category
-from Combination import Combination
-
-
-def isCategoryLink(href):
-    b1 = href.startswith(site_url)
-    b2 = re.match(r'^.*\.pl/[0-9]+.*', href) is not None
-    return b1 and b2
-
-
-def getCategories():
-    page = requests.get(site_url)
-    content = page.text
-    soup = BeautifulSoup(content, "html.parser")
-    banner_elems = soup.find('header').find(id='desktop-header').find('ul').find_all(class_='cbp-hrmenu-tab')
-
-    categories = []
-    for e in banner_elems:
-        main_category = e.find('a', recursive=False, href=isCategoryLink)
-        if not main_category:
-            continue
-
-        mcat_url = main_category['href']
-        mcat_name = main_category.select_one('span').get_text().strip()
-        categories.append(Category(mcat_url, mcat_name, default_parent_category))
-
-        # skip the first element, since it was already added
-        for cat in e.find_all('a', href=isCategoryLink)[1:]:
-            cat_url = cat['href']
-            cat_name = cat.get_text()
-            categories.append(Category(cat_url, cat_name, mcat_name))
-
-    # TODO remove duplicates
-    return categories
+from Lamp import *
+from Category import *
+from Combination import *
 
 
 def getContent(url, prod_id):
@@ -126,7 +94,7 @@ zdjęć (x,y,z...);ID / Nazwa sklepu;Zaawansowane zarządzanie magazynem;Zależn
 
 site_url = "https://mlamp.pl/"
 default_parent_category = 'Home'
-categories = getCategories()
+categories = getCategories(site_url, default_parent_category)
 products_id_url = "js-product-list"
 product_substring = "js-product-miniature-wrapper"
 id = 0
