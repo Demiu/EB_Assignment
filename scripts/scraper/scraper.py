@@ -4,7 +4,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-from lamp import Lamp
+from lamp import Lamp, get_products_for_categories
 from category import get_categories
 from combination import Combination
 
@@ -120,45 +120,16 @@ def get_lamp_informations(main_section, section_product):
 def main():
     site_url = "https://mlamp.pl/"
 
+    print('Getting categories...')
     categories = get_categories(site_url, 'Home')
+    print('Saving categories...')
     save_to_file('data/categories.csv', CATEGORIES_HEADER, categories)
 
-    products_id_url = "js-product-list"
-    product_substring = "js-product-miniature-wrapper"
-    identifier = 0
-
-    for category in categories:
-        url = category.url
-        category_name = category.name
-        products = get_content(url, products_id_url)
-
-        page_results = products.find_all("div",
-            lambda value: value and value.startswith(product_substring))
-
-        lamps = []
-        for result in page_results:
-            a_href = result.find("a").attrs['href']
-
-            a_link = requests.get(a_href)
-            content = a_link.text
-            soup = BeautifulSoup(content, "html.parser")
-
-            main_section = soup.find("main")
-            section_product = main_section.find("section")
-
-            lamp_name, image_lamp, producer_logo, producer, price, delivery, amount = (
-                get_lamp_informations(main_section, section_product))
-
-            cards = section_product.find_all("div", class_="card")
-            description = get_description(cards[0])
-            technical_data = get_technical_data(cards[1])
-
-            identifier += 1
-            lamps.append(Lamp(identifier, lamp_name, category_name, price, delivery, producer, 
-                amount,technical_data, description, url, image_lamp, producer_logo))
-
-        lamps = [lamp for lamp in lamps if lamp.amount != "0"]
-        save_to_file('data/products.csv', products_header, lamps)
+    print('Getting products...')
+    products = get_products_for_categories(categories)
+    print('Saving products...')
+    save_to_file('data/products.csv', products_header, products)
+    exit()
 
 if __name__ == "__main__":
     main()

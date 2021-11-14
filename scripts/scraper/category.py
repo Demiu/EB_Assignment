@@ -47,8 +47,7 @@ def get_categories(site_url, default_parent_category):
     identifier = 100
 
     page = requests.get(site_url)
-    content = page.text
-    soup = BeautifulSoup(content, "html.parser")
+    soup = BeautifulSoup(page.text, 'html.parser')
     banner_elems = (soup
         .find('header')
         .find(id='desktop-header')
