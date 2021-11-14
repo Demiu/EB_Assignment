@@ -21,7 +21,15 @@ class Product:
         self.images = images
         self.features = features
 
-    # JEDEN ; BYC MOZE DO WYRZUCENIA PO SELF PRODUCER BO MOZE MPN JEST NIEPOTRZEBNE
+
+    def get_feature_str(self):
+        feature_str = ''
+        for feature in self.features:
+            feature_str += f"{feature}:{feature['value']}:{feature['position']}"
+
+        return feature_str
+
+
     def write_to_csv(self, csvwriter):
         csvwriter.writerow([
             self.identifier,
@@ -126,10 +134,12 @@ def get_product_urls_on_page(url, page):
 
 
 def get_product_features(details_json):
-    features = []
+    features = {}
     for feature in details_json['features']:
-        feature_str = f"{feature['name']}:{feature['value']}:{feature['position']}"
-        features.append(feature_str)
+        if 'name' in features:
+            features['name'].append((feature['value'], feature['position']))
+        else:
+            features['name'] = [(feature['value'], feature['position'])]
 
     return features
 
@@ -171,7 +181,7 @@ def get_product(url, category):
         features=features
     )
 
-def get_products_for_category(category, already_fetched_dict):
+def get_products_for_category(category, already_fetched_dict, limit=None):
     url = category.url
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -188,6 +198,9 @@ def get_products_for_category(category, already_fetched_dict):
             if product_url not in already_fetched_dict:
                 product = get_product(product_url, category)
                 products.append(product)
+                if len(products) >= limit:
+                    print('\tReached product limit')
+                    return products
             else:
                 already_fetched_dict[product_url].categories += f',{category.name}'
 
@@ -195,14 +208,19 @@ def get_products_for_category(category, already_fetched_dict):
 
     return products
 
-def get_products_for_categories(categories):
+def get_products_for_categories(categories, limit=None):
     identifier_gen_reset(100)
 
     url_to_products = {}
     for category in categories:
         print(f'Getting products for {category.name}...')
-        products = get_products_for_category(category, url_to_products)
+
+        cat_limit = (limit - len(url_to_products)) if limit else None
+        products = get_products_for_category(category, url_to_products, cat_limit)
         url_to_products_new = {p.url: p for p in products}
         url_to_products.update(url_to_products_new)
 
-    return url_to_products.values()
+        if len(url_to_products) == limit:
+            return list(url_to_products.values())
+
+    return list(url_to_products.values())

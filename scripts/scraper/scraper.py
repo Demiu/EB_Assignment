@@ -123,7 +123,7 @@ def main():
     save_to_file('data/categories.csv', CATEGORIES_HEADER, categories)
 
     print('Getting products...')
-    products = get_products_for_categories(categories)
+    products = get_products_for_categories(categories, 5)
     print('Saving products...')
     save_to_directory('data/products', PRODUCTS_HEADER, products, 1000)
     exit()
