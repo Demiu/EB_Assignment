@@ -11,17 +11,16 @@ i poczekajcie az beda ostatnie komunikaty od presty wtedy powinna na localhost:8
 byc presta z polskim tlumaczeniem i polska waluta.
 
 
-Stworzenie db dumpa dla basha (NIE TRZEBA TEGO WPISYWAC):
+Stworzenie db dumpa dla basha:
 
 sudo docker exec presta_lamps_db_1 /usr/bin/mysqldump -u root --password=prestashop prestashop > db-dumps/backup.sql
 
-MOZE DA SIE TO ROBIC AUTOMATYCZNIE ALE NWM NA RAZIE JAK
+
+W install-chromedriver.sh jest pobieranie i rozpakowanie chromedrivera dla Chrome w wersji 95.0.4638.69, ktory pozwala na odpalenie skryptow importujacego i testujacego. Wystarczy po pobraniu projektu z GitHuba wykonac ./install-chromedriver.sh i sie pojawi w folderze seleniumDriver.
 
 
 
 
-CHYBA NIEPOTRZEBNE
-
-Juz nwm co to robi juz:
+Przywracanie db dumpa:
 
 sudo cat db-dumps/backup.sql | sudo docker exec -i presta_lamps_db_1 /usr/bin/mysql -u root --password=prestashop prestashop
