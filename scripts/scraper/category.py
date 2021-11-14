@@ -13,8 +13,8 @@ class Category:
     def __str__(self):
         return f'Category "{self.name}" at {self.url}, under {self.parent_category}'
 
-    def convert_to_csv(self):
-        values = [
+    def write_to_csv(self, csvwriter):
+        csvwriter.writerow([
             str(self.identifier),
             '1', # Active
             self.name,
@@ -32,8 +32,7 @@ class Category:
                         .decode('utf-8'))),
             '', # Image URL
             '', # ID / Name of shop
-        ]
-        return ';'.join(values)
+        ])
 
 
 def is_category_link(site_url, href):

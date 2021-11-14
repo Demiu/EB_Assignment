@@ -1,36 +1,98 @@
+from datetime import datetime
 import json
 import requests
 from bs4 import BeautifulSoup
 
 class Lamp:
-    def __init__(self, *, identifier, name, category, price, delivery, producer, amount,
-    technicalData, description, url, image_lamp, producer_logo):
+    def __init__(self, *, identifier, name, category, price, reference, delivery, producer, quantity,
+    minimal_quantity, technical_data, description, url, available_date, images):
         self.identifier = identifier
         self.name = name
         self.category = category
         self.price = price
+        self.reference = reference
         self.delivery = delivery
         self.producer = producer
-        self.amount = amount
-        self.technical_data = technicalData
+        self.quantity = quantity
+        self.minimal_quantity = minimal_quantity
+        self.technical_data = technical_data
         self.description = description
         self.url = url
-        self.image_lamp = image_lamp
-        self.producer_logo = producer_logo
+        self.available_date = available_date
+        self.images = images
 
     # JEDEN ; BYC MOZE DO WYRZUCENIA PO SELF PRODUCER BO MOZE MPN JEST NIEPOTRZEBNE
-    def convert_to_csv(self):
-        answer = (str(self.identifier) + ";1;" + self.name + ";" + self.category + ";"
-            + str(self.price) + ";1;;0;;;;;;;;")
-        answer += (self.producer + ";;;;;;;;;" + str(self.delivery) + ";;" + str(self.amount)
-            + ";1;1;1;both;;;;" + str(self.technical_data) + ";")
-        answer += (f'"{self.description}"' + ";" + self.producer + ";Meta title-"
-            + str(self.identifier) + ";Meta keywords-" + str(self.identifier)
-            + ";Meta description-" + str(self.identifier) + ";")
-        answer += (self.url + ";Dostępny;Niedostępny;1;;;1;" + self.image_lamp + ", " 
-            + self.producer_logo + ";;0;;0;new;0;0;0;0;0;;;;;0;0;0;0;")
-
-        return answer
+    def write_to_csv(self, csvwriter):
+        csvwriter.writerow([
+            self.identifier,
+            1, # Active (0/1)
+            self.name, # Name*
+            self.category, # Categories (x,y,z...)
+            self.price, # Price tax excluded
+            #self.price, # Price tax included # excluded, see: PRODUCT_HEADER
+            '', # Tax rule ID
+            '', # Cost price
+            0, # On sale (0/1)
+            '', # Discount amount
+            '', # Discount percent
+            '', # Discount from (yyyy-mm-dd)
+            '', # Discount to (yyyy-mm-dd)
+            self.reference, # Reference #
+            self.reference, # Supplier reference #
+            '', # Supplier
+            self.producer, # Brand
+            '', # EAN13
+            '', # UPC
+            '', # MPN
+            '', # Ecotax
+            '', # Width
+            '', # Height
+            '', # Depth
+            '', # Weight
+            self.delivery, # Delivery time of in-stock products:
+            '', # Delivery time of out-of-stock products with allowed orders:
+            self.quantity, # Quantity
+            self.minimal_quantity, # Minimal quantity
+            '', # Low stock level
+            '', # Send me an email when the quantity is under this level
+            '', # Visibility
+            '', # Additional shipping cost
+            '', # Unit for base price
+            '', # Base price
+            '', # Summary
+            self.description, # Description
+            '', # Tags (x,y,z...)
+            '', # Meta title
+            '', # Meta keywords
+            '', # Meta description
+            self.url, # Rewritten URL
+            '', # Label when in stock
+            '', # Label when backorder allowed
+            1, # Available for order (0 = No, 1 = Yes)
+            self.available_date, # Product availability date
+            '', # Product creation date
+            1, # Show price (0 = No, 1 = Yes)
+            ','.join(self.images), # Image URLs (x,y,z...)
+            '', # Image alt texts (x,y,z...)
+            1, # Delete existing images (0 = No, 1 = Yes)
+            '', # Feature (Name:Value:Position:Customized)
+            0, # Available online only (0 = No, 1 = Yes)
+            '', # Condition
+            0, # Customizable (0 = No, 1 = Yes)
+            0, # Uploadable files (0 = No, 1 = Yes)
+            0, # Text fields (0 = No, 1 = Yes)
+            '', # Action when out of stock
+            0, # Virtual product (0 = No, 1 = Yes)
+            '', # File URL
+            '', # Number of allowed downloads
+            '', # Expiration date (yyyy-mm-dd)
+            '', # Number of days
+            '', # ID / Name of shop
+            '', # Advanced Stock Management
+            '', # Depends on stock
+            '', # Warehouse
+            '', # Accessories (x,y,z...)
+        ])
 
 
 class _IdentiferGen:
@@ -70,14 +132,15 @@ def get_product(url, category):
     product_data = soup.select_one('#product-details')['data-product']
     data_json = json.loads(product_data)
 
-    producer = data_json['id_manufacturer'] # TODO turn into the manufacturer name
-    reference = data_json['reference']
-    price = data_json['price_amount']
-    images = [img['large']['url'] for img in data_json['images']]
-    delivery_time = data_json['available_now']
-    quantity = data_json['quantity']
-    description = data_json['description'].replace('\n', '\\n').replace('\r', '').replace('"', '""')
     name = data_json['name']
+    price = data_json['price_amount']
+    reference = data_json['reference']
+    delivery_time = data_json['available_now']
+    producer = data_json['id_manufacturer'] # TODO turn into the manufacturer name
+    quantity = data_json['quantity']
+    minimal_quantity = data_json['minimal_quantity']
+    description = data_json['description']#.replace('\n', '\\n').replace('\r', '').replace('"', '""')
+    images = [img['bySize']['large_default']['url'] for img in data_json['images']]
 
     #producer = prod_info.select_one('.product-manufacturer img')['alt']
 
@@ -86,15 +149,17 @@ def get_product(url, category):
         name=name,
         category=category.name,
         price=price,
+        reference=reference,
         delivery=delivery_time,
         producer=producer,
-        amount=quantity,
-        technicalData='', # TODO
+        quantity=quantity,
+        minimal_quantity=minimal_quantity,
+        technical_data='', # TODO
         description=description,
         url=url,
-        image_lamp=images[0], # TODO
-        producer_logo=images[0]) # TODO
-
+        available_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        images=images
+    )
 
 def get_products_for_category(category):
     url = category.url
