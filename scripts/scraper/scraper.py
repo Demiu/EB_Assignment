@@ -2,12 +2,9 @@
 
 import csv
 import os
-import requests
-from bs4 import BeautifulSoup
 
 from product import get_products_for_categories
 from category import get_categories
-from combination import Combination
 
 
 CATEGORIES_HEADER = [
@@ -114,6 +111,7 @@ def main():
 
     print('Getting categories...')
     categories = get_categories(site_url, 'Home')
+    print(f'Found {len(categories)} categories')
     print('Saving categories...')
     save_to_file('data/categories.csv', CATEGORIES_HEADER, categories)
 

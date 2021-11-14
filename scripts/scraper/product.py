@@ -4,18 +4,17 @@ import requests
 from bs4 import BeautifulSoup
 
 class Product:
-    def __init__(self, *, identifier, name, category, price, reference, delivery, producer, quantity,
-    minimal_quantity, technical_data, description, url, available_date, images, features):
+    def __init__(self, *, identifier, name, categories, price, reference, delivery, producer, 
+    quantity, minimal_quantity, description, url, available_date, images, features):
         self.identifier = identifier
         self.name = name
-        self.category = category
+        self.categories = categories
         self.price = price
         self.reference = reference
         self.delivery = delivery
         self.producer = producer
         self.quantity = quantity
         self.minimal_quantity = minimal_quantity
-        self.technical_data = technical_data
         self.description = description
         self.url = url
         self.available_date = available_date
@@ -28,7 +27,7 @@ class Product:
             self.identifier,
             1, # Active (0/1)
             self.name, # Name*
-            self.category, # Categories (x,y,z...)
+            self.categories, # Categories (x,y,z...)
             self.price, # Price tax excluded
             #self.price, # Price tax included # excluded, see: PRODUCT_HEADER
             '', # Tax rule ID
@@ -158,14 +157,13 @@ def get_product(url, category):
     return Product(
         identifier=identifier_gen(),
         name=name,
-        category=category.name,
+        categories=category.name,
         price=price,
         reference=reference,
         delivery=delivery_time,
         producer=producer,
         quantity=quantity,
         minimal_quantity=minimal_quantity,
-        technical_data='', # TODO
         description=description,
         url=url,
         available_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -173,7 +171,7 @@ def get_product(url, category):
         features=features
     )
 
-def get_products_for_category(category):
+def get_products_for_category(category, already_fetched_dict):
     url = category.url
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -187,23 +185,24 @@ def get_products_for_category(category):
 
         product_urls = get_product_urls_on_page(url, page_num)
         for product_url in product_urls:
-            product = get_product(product_url, category)
-            products.append(product)
-        for p in products:
-            print(p)
-        return products # TODO REMOVE
+            if product_url not in already_fetched_dict:
+                product = get_product(product_url, category)
+                products.append(product)
+            else:
+                already_fetched_dict[product_url].categories += f',{category.name}'
+
+    print('\tProcessed all pages')
 
     return products
 
 def get_products_for_categories(categories):
     identifier_gen_reset(100)
 
-    products = []
+    url_to_products = {}
     for category in categories:
         print(f'Getting products for {category.name}...')
-        products.extend(get_products_for_category(category))
-        return products # TODO REMOVE
+        products = get_products_for_category(category, url_to_products)
+        url_to_products_new = {p.url: p for p in products}
+        url_to_products.update(url_to_products_new)
 
-    exit()
-    
-    return products
+    return url_to_products.values()
