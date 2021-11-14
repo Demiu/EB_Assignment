@@ -3,7 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-class Lamp:
+class Product:
     def __init__(self, *, identifier, name, category, price, reference, delivery, producer, quantity,
     minimal_quantity, technical_data, description, url, available_date, images):
         self.identifier = identifier
@@ -144,7 +144,7 @@ def get_product(url, category):
 
     #producer = prod_info.select_one('.product-manufacturer img')['alt']
 
-    return Lamp(
+    return Product(
         identifier=identifier_gen(),
         name=name,
         category=category.name,
