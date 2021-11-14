@@ -5,3 +5,5 @@ __pycache__/
 
 volumes/db
 volumes/presta/var/www/html/var/cache
+volumes/presta/var/www/html/admin123456/import
+

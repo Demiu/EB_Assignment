@@ -181,7 +181,7 @@ def get_products_for_category(category, already_fetched_dict):
 
     products = []
     for page_num in range(pages_count):
-        print(f'\tProcessing page {page_num}', end='\r')
+        print(f'\tProcessing page {page_num}...', end='\r')
 
         product_urls = get_product_urls_on_page(url, page_num)
         for product_url in product_urls:
