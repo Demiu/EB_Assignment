@@ -106,6 +106,13 @@ def save_to_file(filepath, header, objects):
             obj.write_to_csv(csvwriter)
 
 
+def save_to_directory(dirpath, header, objects, per_file):
+    chunks = [objects[i:i + per_file] for i in range(0, len(objects), per_file)]
+
+    for i, obj_chunk in enumerate(chunks):
+        save_to_file(os.path.join(dirpath, f'{i}.csv'), header, obj_chunk)
+
+
 def main():
     site_url = "https://mlamp.pl/"
 
@@ -118,7 +125,7 @@ def main():
     print('Getting products...')
     products = get_products_for_categories(categories)
     print('Saving products...')
-    save_to_file('data/products.csv', PRODUCTS_HEADER, products)
+    save_to_directory('data/products', PRODUCTS_HEADER, products, 1000)
     exit()
 
 if __name__ == "__main__":
