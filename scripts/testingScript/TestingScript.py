@@ -8,7 +8,9 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 
-os.environ['PATH'] += r'/home/grudos/Pulpit/Biz/scripts/seleniumDriver/linux/chromedriver'
+os.chdir("../seleniumDriver/linux")
+path = os.getcwd() + "/chromedriver"
+os.environ['PATH'] += r'{path}'
 driver = webdriver.Chrome()
 driver.maximize_window()
 
@@ -170,7 +172,7 @@ def checkOrderStatus(email, password):
     my_account = driver.find_element(By.CSS_SELECTOR, 'a[class="account"]').get_attribute("href")
     driver.get(my_account)
 
-    # sometimes you had to log into your account
+    # TODO: TO MOZE NIEPOTRZEBNE, sometimes you had to log into your account
     try:
         login_field = driver.find_element(By.CSS_SELECTOR, 'input[id="field-email"]')
         login_field.clear()

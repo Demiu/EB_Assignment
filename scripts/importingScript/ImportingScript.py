@@ -11,7 +11,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 
 
-os.environ['PATH'] += r'/home/grudos/Pulpit/Biz/scripts/seleniumDriver/linux/chromedriver'
+os.chdir("../seleniumDriver/linux")
+path = os.getcwd() + "/chromedriver"
+os.environ['PATH'] += r'{path}'
 driver = webdriver.Chrome()
 driver.maximize_window()
 
@@ -57,8 +59,8 @@ def importCategories():
     import_categories.select_by_visible_text("Kategorie")
 
     file_upload = driver.find_element(By.CSS_SELECTOR, 'input[id="file"]')
-    # Z WYKORZYSTANIEM os.getcwd() DO OBECNEJ SCIEZKI MOZNA COS TUTAJ WYKOMBINOWAC
-    file_upload.send_keys("/home/grudos/Pulpit/Biz/scripts/scraper/data/categories.csv")
+    path = os.getcwd() + "/categories.csv"
+    file_upload.send_keys(path)
     time.sleep(1)
 
     adjustSettings(categories_import_settings)
@@ -73,10 +75,8 @@ def importProducts():
     import_products.select_by_visible_text("Produkty")
 
     file_upload = driver.find_element(By.CSS_SELECTOR, 'input[id="file"]')
-    # Z WYKORZYSTANIEM os.getcwd() DO OBECNEJ SCIEZKI MOZNA COS TUTAJ WYKOMBINOWAC
-    # PLIK NIZEJ JEST PRAWIDLOWY ALE DUZY TO NIE CHCE NA NIM TESTOWAC BO DLUGO BY TRWALO NA RAZIE
-    # file_upload.send_keys("/home/grudos/Pulpit/Biz/scripts/scraper/data/products.csv")
-    file_upload.send_keys("/home/grudos/Pulpit/Biz/scripts/scraper/data/product.csv")
+    path = os.getcwd() + "/products.csv"
+    file_upload.send_keys(path)
     time.sleep(1)
 
     adjustSettings(products_import_settings)
@@ -89,7 +89,7 @@ def confirmImport():
 
     driver.find_element(By.CSS_SELECTOR, 'button[name="import"]').click()
 
-    # LINIE NIZEJ DO WYRZUCENIA JAK SIE SCRAPERA POPRAWI I NIE BEDZIE SIE CZEPIAL O PODATKI
+    # TODO: LINIE NIZEJ MOZE DO WYRZUCENIA JAK SIE SCRAPERA POPRAWI I NIE BEDZIE SIE CZEPIAL O PODATKI
     try:
         WebDriverWait(driver, 2).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[id="import_continue_button"]')))
@@ -118,6 +118,9 @@ def settingIndexingProducts():
     search_preferences = driver.find_element(By.CSS_SELECTOR, 'li[id="subtab-AdminParentSearchConf"] a').get_attribute("href")
     driver.get(search_preferences)
 
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.LINK_TEXT, "Przebuduj cały indeks")))
+
     rebuild_index = driver.find_element(By.LINK_TEXT, "Przebuduj cały indeks")
     rebuild_index.click()
 
@@ -128,10 +131,14 @@ def settingIndexingProducts():
 
 
 
+# change path to the folder with scraped data
+os.chdir("../../scraper/data")
+
 driver.get(admin_panel)
 loggingIn()
 goToTheCategoryPage()
 importCategories()
 importProducts()
+time.sleep(2)
 settingIndexingProducts()
 driver.close()
