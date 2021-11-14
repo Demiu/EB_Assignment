@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 class Product:
     def __init__(self, *, identifier, name, category, price, reference, delivery, producer, quantity,
-    minimal_quantity, technical_data, description, url, available_date, images):
+    minimal_quantity, technical_data, description, url, available_date, images, features):
         self.identifier = identifier
         self.name = name
         self.category = category
@@ -20,6 +20,7 @@ class Product:
         self.url = url
         self.available_date = available_date
         self.images = images
+        self.features = features
 
     # JEDEN ; BYC MOZE DO WYRZUCENIA PO SELF PRODUCER BO MOZE MPN JEST NIEPOTRZEBNE
     def write_to_csv(self, csvwriter):
@@ -75,7 +76,7 @@ class Product:
             ','.join(self.images), # Image URLs (x,y,z...)
             '', # Image alt texts (x,y,z...)
             1, # Delete existing images (0 = No, 1 = Yes)
-            '', # Feature (Name:Value:Position:Customized)
+            ','.join(self.features), # Feature (Name:Value:Position:Customized)
             0, # Available online only (0 = No, 1 = Yes)
             '', # Condition
             0, # Customizable (0 = No, 1 = Yes)
@@ -125,6 +126,15 @@ def get_product_urls_on_page(url, page):
     return [a.find('a')['href'] for a in articles]
 
 
+def get_product_features(details_json):
+    features = []
+    for feature in details_json['features']:
+        feature_str = f"{feature['name']}:{feature['value']}:{feature['position']}"
+        features.append(feature_str)
+
+    return features
+
+
 def get_product(url, category):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -139,8 +149,9 @@ def get_product(url, category):
     producer = data_json['id_manufacturer'] # TODO turn into the manufacturer name
     quantity = data_json['quantity']
     minimal_quantity = data_json['minimal_quantity']
-    description = data_json['description']#.replace('\n', '\\n').replace('\r', '').replace('"', '""')
+    description = data_json['description']
     images = [img['bySize']['large_default']['url'] for img in data_json['images']]
+    features = get_product_features(data_json)
 
     #producer = prod_info.select_one('.product-manufacturer img')['alt']
 
@@ -158,7 +169,8 @@ def get_product(url, category):
         description=description,
         url=url,
         available_date=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        images=images
+        images=images,
+        features=features
     )
 
 def get_products_for_category(category):

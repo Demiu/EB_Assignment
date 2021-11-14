@@ -5,7 +5,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-from lamp import get_products_for_categories
+from product import get_products_for_categories
 from category import get_categories
 from combination import Combination
 
@@ -107,63 +107,6 @@ def save_to_file(filepath, header, objects):
             csvwriter.writerow(header)
         for obj in objects:
             obj.write_to_csv(csvwriter)
-
-def get_content(url, prod_id):
-    page = requests.get(url)
-    content = page.text
-    soup = BeautifulSoup(content, "html.parser")
-    products = soup.find(id=prod_id)
-    return products
-
-
-def get_description(product_info):
-    header = product_info.find("h2").text
-    answer = "<h2>" + header + "</h2><tbody><tr><td>"
-    text = product_info.find_all("p")
-
-    for paragraph in text:
-        answer += "<p>" + paragraph.text + "</p>"
-
-    answer += ("</td><td width=510></td><tr></tbody>")
-    return answer
-
-
-def get_technical_data(product_info):
-    header = product_info.find("h3").text
-    answer = "<h3>" + header + "</h3><dl>"
-    dts = product_info.find_all("dt")
-    dds = product_info.find_all("dd")
-
-    for idt, idd in zip(dts, dds):
-        answer += "<dt>" + idt.text.replace("\n", " ") + "</dt>"
-        answer += "<dd>" + idd.text.replace("\n", " ") + "</dd>"
-
-    answer += "</dl>"
-    return answer
-
-
-def get_lamp_informations(main_section, section_product):
-    lamp_name = main_section.find("h1").text
-
-    lamp_info = section_product.find('div', class_='product-lmage-large')
-    image_lamp = lamp_info.find('img')['src']
-
-    producer_info = section_product.find('div', 
-        class_='product-manufacturer product-manufacturer-next float-right')
-    producer_logo = producer_info.find('img')['src']
-    producer = producer_info.find('img')['alt']
-
-    price = section_product.find("span", class_="product-price").text[:-3]
-    delivery = section_product.find("span", class_="product-available").text.strip()
-
-    amount = "0"
-
-    product_quantities = section_product.find('div', class_='product-quantities')
-    if product_quantities:
-        amount = product_quantities.find('span')['data-stock']
-    #except if amount = "0" then we do not take lamps which are not there yet
-
-    return lamp_name, image_lamp, producer_logo, producer, price, delivery, amount
 
 
 def main():
