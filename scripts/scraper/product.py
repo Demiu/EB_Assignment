@@ -24,8 +24,12 @@ class Product:
 
     def get_feature_str(self):
         feature_str = ''
-        for feature in self.features:
-            feature_str += f"{feature}:{feature['value']}:{feature['position']}"
+        for f_name, features in self.features.items():
+            f_name = f_name.replace(':', '').strip()
+            for feature in features:
+                f_value = feature[0].replace(':', '').strip()
+                f_position = feature[1]
+                feature_str += f"{f_name}:{f_value}:{f_position},"
 
         return feature_str
 
@@ -83,7 +87,7 @@ class Product:
             ','.join(self.images), # Image URLs (x,y,z...)
             '', # Image alt texts (x,y,z...)
             1, # Delete existing images (0 = No, 1 = Yes)
-            ','.join(self.features), # Feature (Name:Value:Position:Customized)
+            self.get_feature_str(), # Feature (Name:Value:Position:Customized)
             0, # Available online only (0 = No, 1 = Yes)
             '', # Condition
             0, # Customizable (0 = No, 1 = Yes)
@@ -129,19 +133,33 @@ def get_product_urls_on_page(url, page):
     page = requests.get(url, params={'page': page})
     soup = BeautifulSoup(page.text, 'html.parser')
 
+    product_urls = []
     articles = soup.select('#main #products #js-product-list article')
-    return [a.find('a')['href'] for a in articles]
+    for article in articles:
+        variants_div = article.select_one('.products-variants')
+        if variants_div: # TODO return info about combinations
+            a_tags = variants_div.find_all('a')
+            urls = [a['href'].split('?')[0] for a in a_tags]
+            product_urls.extend(urls)
+        else:
+            url = article.find('a')['href']
+            product_urls.append(url)
+
+    return product_urls
 
 
 def get_product_features(details_json):
-    features = {}
+    features_dict = {}
     for feature in details_json['features']:
-        if 'name' in features:
-            features['name'].append((feature['value'], feature['position']))
+        f_name = feature['name']
+        f_value = feature['value']
+        f_position = feature['position']
+        if f_name in features_dict:
+            features_dict[f_name].append((f_value, f_position))
         else:
-            features['name'] = [(feature['value'], feature['position'])]
+            features_dict[f_name] = [(f_value, f_position)]
 
-    return features
+    return features_dict
 
 
 def get_product(url, category):
