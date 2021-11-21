@@ -219,7 +219,7 @@ def get_products_for_category(category, already_fetched_dict, limit=None):
                 products.append(product)
                 if len(products) >= limit:
                     print(f'\tReached product limit for category on page {page_num} '
-                        + 'with {len(products)} new products')
+                        + f'with {len(products)} new products')
                     return products
             else:
                 already_fetched_dict[product_url].categories += f',{category.name}'
