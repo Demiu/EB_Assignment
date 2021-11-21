@@ -94,7 +94,6 @@ PRODUCTS_HEADER = [
     'Accessories (x,y,z...)'
 ]
 
-
 COMBINATIONS_HEADER = [
     'Product ID',
     'Product reference',

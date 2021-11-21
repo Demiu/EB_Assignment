@@ -1,6 +1,7 @@
 class Combination:
-    def __init__(self, product, attributes, values, impact_on_price, is_default):
+    def __init__(self, product, reference_suffix, attributes, values, impact_on_price, is_default):
         self.product = product
+        self.reference_suffix = reference_suffix
         self.attributes = attributes
         self.values = values
         self.impact_on_price = impact_on_price
@@ -14,7 +15,7 @@ class Combination:
             self.attributes,
             self.values,
             self.product.reference, #Supplier reference
-            self.product.reference, #Reference
+            self.product.reference + self.reference_suffix, #Reference
             '', #EAN13
             '', #UPC
             '', #MPN
@@ -46,11 +47,14 @@ def get_warranty_combinations_for_products_in_category(products, category):
 
         attribute = 'Gwarancja:select:0'
         no_warranty_value = 'Brak:0'
-        warranty_value = '12 miesięcy:0'
-        no_warranty_comb = Combination(product, attribute, no_warranty_value, 0, 0)
-        warranty_comb = Combination(product, attribute, warranty_value, 50, 1)
+        warranty6_value = '6 miesięcy:0'
+        warranty12_value = '12 miesięcy:0'
+        no_warranty_comb = Combination(product, '', attribute, no_warranty_value, 0, 0)
+        warranty6_comb = Combination(product, '-warranty6', attribute, warranty6_value, 30, 0)
+        warranty12_comb = Combination(product, '-warranty12', attribute, warranty12_value, 50, 1)
 
+        combinations.append(warranty12_comb)
+        combinations.append(warranty6_comb)
         combinations.append(no_warranty_comb)
-        combinations.append(warranty_comb)
 
     return combinations

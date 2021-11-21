@@ -1,6 +1,6 @@
 Product ID;Product reference;Attribute (Name:Type:Position)*;Value (Value:Position)*;Supplier reference;Reference;EAN13;UPC;MPN;Cost price;Impact on price;Ecotax;Quantity;Minimal quantity;Low stock level;Send me an email when the quantity is under this level;Impact on weight;Default (0 = No, 1 = Yes);Combination availability date;Choose among product images by position (1,2,3...);Image URLs (x,y,z...);Image alt texts (x,y,z...);ID / Name of shop;Advanced Stock Management;Depends on stock;Warehouse
 942;308573;Gwarancja:select:0;Brak:0;308573;308573;;;;;0;;610;1;;;;0;2021-11-21 09:40:40;;;;;;;
-942;308573;Gwarancja:select:0;12 miesięcy:0;308573;308573;;;;;50;;610;1;;;;1;2021-11-21 09:40:40;;;;;;;
+942;308573;Gwarancja:select:0;12 miesięcy:0;308573;308573-1;;;;;50;;610;1;;;;1;2021-11-21 09:40:40;;;;;;;
 943;304483;Gwarancja:select:0;Brak:0;304483;304483;;;;;0;;642;1;;;;0;2021-11-21 09:40:41;;;;;;;
 943;304483;Gwarancja:select:0;12 miesięcy:0;304483;304483;;;;;50;;642;1;;;;1;2021-11-21 09:40:41;;;;;;;
 944;304513;Gwarancja:select:0;Brak:0;304513;304513;;;;;0;;550;1;;;;0;2021-11-21 09:40:42;;;;;;;
