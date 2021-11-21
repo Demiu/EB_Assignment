@@ -5,6 +5,7 @@ import os
 
 from product import get_products_for_categories
 from category import get_categories
+from combination import get_warranty_combinations_for_products_in_category
 
 
 CATEGORIES_HEADER = [
@@ -94,6 +95,36 @@ PRODUCTS_HEADER = [
 ]
 
 
+COMBINATIONS_HEADER = [
+    'Product ID',
+    'Product reference',
+    'Attribute (Name:Type:Position)*',
+    'Value (Value:Position)*',
+    'Supplier reference',
+    'Reference',
+    'EAN13',
+    'UPC',
+    'MPN',
+    'Cost price',
+    'Impact on price',
+    'Ecotax',
+    'Quantity',
+    'Minimal quantity',
+    'Low stock level',
+    'Send me an email when the quantity is under this level',
+    'Impact on weight',
+    'Default (0 = No, 1 = Yes)',
+    'Combination availability date',
+    'Choose among product images by position (1,2,3...)',
+    'Image URLs (x,y,z...)',
+    'Image alt texts (x,y,z...)',
+    'ID / Name of shop',
+    'Advanced Stock Management',
+    'Depends on stock',
+    'Warehouse'
+]
+
+
 def save_to_file(filepath, header, objects):
     if not os.path.exists(os.path.dirname(filepath)):
         os.makedirs(os.path.dirname(filepath))
@@ -126,7 +157,11 @@ def main():
     products = get_products_for_categories(categories, total_limit=3000, category_limit=50)
     print('Saving products...')
     save_to_directory('data/products', PRODUCTS_HEADER, products, 1000)
-    exit()
+
+    print('Creating combinations...')
+    combinations = get_warranty_combinations_for_products_in_category(products, 'Żarówki')
+    print('Saving combinations...')
+    save_to_directory('data/combinations', COMBINATIONS_HEADER, combinations, 1000)
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,5 @@
 from datetime import datetime
 import json
-from typing import Match
 import requests
 from bs4 import BeautifulSoup
 
@@ -219,12 +218,12 @@ def get_products_for_category(category, already_fetched_dict, limit=None):
                 product = get_product(product_url, category)
                 products.append(product)
                 if len(products) >= limit:
-                    print(f'\tReached product limit for category on page {page_num}')
+                    print(f'\tReached product limit for category on page {page_num} with {len(products)} new products')
                     return products
             else:
                 already_fetched_dict[product_url].categories += f',{category.name}'
 
-    print('\tProcessed all pages')
+    print(f'\tProcessed all pages with {len(products)} new products')
 
     return products
 
@@ -250,7 +249,7 @@ def get_products_for_categories(categories, *, total_limit=None, category_limit=
         url_to_products.update(url_to_products_new)
 
         if len(url_to_products) == total_limit:
-            print(f'Reached total product limit')
+            print('Reached total product limit')
             return list(url_to_products.values())
 
     return list(url_to_products.values())
