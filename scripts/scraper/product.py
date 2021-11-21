@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 class Product:
-    def __init__(self, *, identifier, name, categories, price, reference, delivery, producer, 
+    def __init__(self, *, identifier, name, categories, price, reference, delivery, producer,
     quantity, minimal_quantity, description, url, available_date, images, features):
         self.identifier = identifier
         self.name = name
@@ -218,7 +218,8 @@ def get_products_for_category(category, already_fetched_dict, limit=None):
                 product = get_product(product_url, category)
                 products.append(product)
                 if len(products) >= limit:
-                    print(f'\tReached product limit for category on page {page_num} with {len(products)} new products')
+                    print(f'\tReached product limit for category on page {page_num} '
+                        + 'with {len(products)} new products')
                     return products
             else:
                 already_fetched_dict[product_url].categories += f',{category.name}'
@@ -243,7 +244,7 @@ def get_products_for_categories(categories, *, total_limit=None, category_limit=
             limit = category_limit
         else:
             limit = None
-        
+
         products = get_products_for_category(category, url_to_products, limit)
         url_to_products_new = {p.url: p for p in products}
         url_to_products.update(url_to_products_new)
