@@ -6,7 +6,7 @@ ID;Active (0/1);Name*;Parent category;Root category (0/1);Description;Meta title
 104;1;Lampki stołowe | biurkowe;Lampy wewnętrzne;0;;;;;lampki-stoowe-biurkowe;;
 105;1;Lampy stojące podłogowe;Lampy wewnętrzne;0;;;;;lampy-stojace-podogowe;;
 106;1;Lampy dla dzieci;Lampy wewnętrzne;0;;;;;lampy-dla-dzieci;;
-107;1;Lampy nad obraz, do galerii;Lampy wewnętrzne;0;;;;;lampy-nad-obraz-do-galerii;;
+107;1;Lampy nad obraz do galerii;Lampy wewnętrzne;0;;;;;lampy-nad-obraz-do-galerii;;
 108;1;Lampy LED i oświetlenie ledowe;Lampy wewnętrzne;0;;;;;lampy-led-i-oswietlenie-ledowe;;
 109;1;Lampy techniczne;Lampy wewnętrzne;0;;;;;lampy-techniczne;;
 110;1;Oświetlenie podtynkowe i oprawy LED;Lampy wewnętrzne;0;;;;;oswietlenie-podtynkowe-i-oprawy-led;;
@@ -38,9 +38,9 @@ ID;Active (0/1);Name*;Parent category;Root category (0/1);Description;Meta title
 138;1;Lampy do salonu;Pomieszczenia;0;;;;;lampy-do-salonu;;
 139;1;Lampy do kuchni;Pomieszczenia;0;;;;;lampy-do-kuchni;;
 140;1;Oświetlenie i lampy do jadalni;Pomieszczenia;0;;;;;oswietlenie-i-lampy-do-jadalni;;
-141;1;Lampy do sypialni - wiszące, sufitowe;Pomieszczenia;0;;;;;lampy-do-sypialni-wiszace-sufitowe;;
+141;1;Lampy do sypialni - wiszące sufitowe;Pomieszczenia;0;;;;;lampy-do-sypialni-wiszace-sufitowe;;
 142;1;Lampy do pokoju dziecięcego;Pomieszczenia;0;;;;;lampy-do-pokoju-dzieciecego;;
-143;1;Lampy do biura, oświetlenie gabinetowe;Pomieszczenia;0;;;;;lampy-do-biura-oswietlenie-gabinetowe;;
+143;1;Lampy do biura oświetlenie gabinetowe;Pomieszczenia;0;;;;;lampy-do-biura-oswietlenie-gabinetowe;;
 144;1;Lampy do łazienki i nad lustro;Pomieszczenia;0;;;;;lampy-do-azienki-i-nad-lustro;;
 145;1;Oświetlenie holu | przedpokoju;Pomieszczenia;0;;;;;oswietlenie-holu-przedpokoju;;
 146;1;Oświetlenie przemysłowe i komercyjne;Pomieszczenia;0;;;;;oswietlenie-przemysowe-i-komercyjne;;
