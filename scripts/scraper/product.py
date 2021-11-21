@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+from typing import Match
 import requests
 from bs4 import BeautifulSoup
 
@@ -169,18 +170,19 @@ def get_product(url, category):
     product_data = soup.select_one('#product-details')['data-product']
     data_json = json.loads(product_data)
 
+    manufacturer_img = soup.find(id='col-product-info').select_one('.product-manufacturer img')
+
     name = data_json['name']
     price = data_json['price_amount']
     reference = data_json['reference']
     delivery_time = data_json['available_now']
-    producer = data_json['id_manufacturer'] # TODO turn into the manufacturer name
+    #producer = data_json['id_manufacturer'] # TODO this is manufacturer id if we ever fetch all
+    producer = manufacturer_img['alt'] if manufacturer_img else ''
     quantity = data_json['quantity']
     minimal_quantity = data_json['minimal_quantity']
     description = data_json['description']
     images = [img['bySize']['large_default']['url'] for img in data_json['images']]
     features = get_product_features(data_json)
-
-    #producer = prod_info.select_one('.product-manufacturer img')['alt']
 
     return Product(
         identifier=identifier_gen(),
@@ -217,7 +219,7 @@ def get_products_for_category(category, already_fetched_dict, limit=None):
                 product = get_product(product_url, category)
                 products.append(product)
                 if len(products) >= limit:
-                    print('\tReached product limit')
+                    print(f'\tReached product limit for category on page {page_num}')
                     return products
             else:
                 already_fetched_dict[product_url].categories += f',{category.name}'
@@ -226,19 +228,29 @@ def get_products_for_category(category, already_fetched_dict, limit=None):
 
     return products
 
-def get_products_for_categories(categories, limit=None):
+def get_products_for_categories(categories, *, total_limit=None, category_limit=None):
     identifier_gen_reset(100)
 
     url_to_products = {}
-    for category in categories:
-        print(f'Getting products for {category.name}...')
+    for i, category in enumerate(categories):
+        print(f'Getting products for category #{i} - {category.name}...')
 
-        cat_limit = (limit - len(url_to_products)) if limit else None
-        products = get_products_for_category(category, url_to_products, cat_limit)
+        if total_limit:
+            if category_limit:
+                limit = min(total_limit - len(url_to_products), category_limit)
+            else:
+                limit = total_limit - len(url_to_products)
+        elif category_limit:
+            limit = category_limit
+        else:
+            limit = None
+        
+        products = get_products_for_category(category, url_to_products, limit)
         url_to_products_new = {p.url: p for p in products}
         url_to_products.update(url_to_products_new)
 
-        if len(url_to_products) == limit:
+        if len(url_to_products) == total_limit:
+            print(f'Reached total product limit')
             return list(url_to_products.values())
 
     return list(url_to_products.values())
