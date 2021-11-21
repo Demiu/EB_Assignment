@@ -1,0 +1,8 @@
+/*
+ * Custom code goes here.
+ * A template should always ship with an empty custom.css
+ */
+ #header{ background: #FFA500 !important; }
+ #_desktop_logo{ width: auto !important; }
+ .top-menu a[data-depth="0"] { font-size: 0.9rem; !important }
+ #description .product-description table tr td:last-child { width: 0; }
