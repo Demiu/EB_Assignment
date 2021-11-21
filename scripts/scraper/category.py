@@ -60,14 +60,14 @@ def get_categories(site_url, default_parent_category):
             continue
 
         mcat_url = main_category['href']
-        mcat_name = main_category.select_one('span').get_text().strip()
+        mcat_name = main_category.select_one('span').get_text().strip().replace(',', '')
         categories.append(Category(identifier, mcat_url, mcat_name, default_parent_category))
         identifier += 1
 
         # skip the first element, since it was already added
         for cat in elem.find_all('a', href=is_cat_link_pred)[1:]:
             cat_url = cat['href']
-            cat_name = cat.get_text()
+            cat_name = cat.get_text().replace(',', '')
             categories.append(Category(identifier, cat_url, cat_name, mcat_name))
             identifier += 1
 
