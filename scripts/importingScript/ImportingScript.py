@@ -3,6 +3,7 @@ import random
 import time
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
@@ -10,11 +11,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 
-
 os.chdir("../seleniumDriver/linux")
 path = os.getcwd() + "/chromedriver"
-os.environ['PATH'] += r'{path}'
-driver = webdriver.Chrome()
+s = Service(r"{}".format(path))
+driver = webdriver.Chrome(service=s)
 driver.maximize_window()
 
 admin_panel = "https://localhost/admin123456"
@@ -23,6 +23,8 @@ password_admin = "prestashop"
 
 categories_import_settings = ["truncate_1", "regenerate_0", "forceIDs_0", "sendemail_0"]
 products_import_settings = ["truncate_1", "match_ref_0", "regenerate_0", "forceIDs_0", "sendemail_0"]
+products_import_settings_later = ["truncate_0", "match_ref_0", "regenerate_0", "forceIDs_0", "sendemail_0"]
+number_of_product_files = 3
 
 
 def loggingIn():
@@ -67,7 +69,7 @@ def importCategories():
     confirmImport()
 
 
-def importProducts():
+def importProducts(num_file, which_file):
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'select[name="entity"]')))
 
@@ -75,28 +77,28 @@ def importProducts():
     import_products.select_by_visible_text("Produkty")
 
     file_upload = driver.find_element(By.CSS_SELECTOR, 'input[id="file"]')
-    path = os.getcwd() + "/products.csv"
+    path = os.getcwd() + "/products/" + str(num_file) + ".csv"
     file_upload.send_keys(path)
     time.sleep(1)
 
-    adjustSettings(products_import_settings)
+    # settings with removal of previous products for the first file
+    if which_file == 0:
+        adjustSettings(products_import_settings)
+    # settings without removing previous products for subsequent files
+    elif which_file > 0:
+        adjustSettings(products_import_settings_later)
+
     confirmImport()
 
 
 def confirmImport():
-    driver.find_element(By.CSS_SELECTOR, 'button[name="submitImportFile"]').click()
-    driver.switch_to.alert.accept()
-
-    driver.find_element(By.CSS_SELECTOR, 'button[name="import"]').click()
-
-    # TODO: LINIE NIZEJ MOZE DO WYRZUCENIA JAK SIE SCRAPERA POPRAWI I NIE BEDZIE SIE CZEPIAL O PODATKI
     try:
-        WebDriverWait(driver, 2).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[id="import_continue_button"]')))
-        driver.find_element(By.CSS_SELECTOR, 'button[id="import_continue_button"]').click()
+        driver.find_element(By.CSS_SELECTOR, 'button[name="submitImportFile"]').click()
+        driver.switch_to.alert.accept()
     except:
         pass
-    # DOTAD TE LINIE
+
+    driver.find_element(By.CSS_SELECTOR, 'button[name="import"]').click()
 
     WebDriverWait(driver, 10000).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[id="import_close_button"]')))
@@ -138,7 +140,14 @@ driver.get(admin_panel)
 loggingIn()
 goToTheCategoryPage()
 importCategories()
-importProducts()
+
+# for demonstration purposes we only import data from the first file
+importProducts(2, 0)
+'''
+for i in range(0, number_of_product_files):
+    importProducts(i, i)
+'''
+
 time.sleep(2)
 settingIndexingProducts()
 driver.close()

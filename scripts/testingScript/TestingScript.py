@@ -4,18 +4,19 @@ import time
 import string
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 
 os.chdir("../seleniumDriver/linux")
 path = os.getcwd() + "/chromedriver"
-os.environ['PATH'] += r'{path}'
-driver = webdriver.Chrome()
+s = Service(r"{}".format(path))
+driver = webdriver.Chrome(service=s)
 driver.maximize_window()
 
 added_lamps_count = 10
-categories_urls = ["https://localhost/pl/6-lampy-sufitowe-plafony", "https://localhost/pl/12-lampy-zewnetrzne-wiszace"]
+categories_urls = ["https://localhost/120-lampy-zewnetrzne-sufitowe", "https://localhost/150-oswietlenie-garderoby"]
 lamp_count_on_site = 12
 
 first_category_lamps_count = 5
@@ -61,10 +62,10 @@ def addLampsToCart(category_url, category_lamps_count):
         lamp = driver.find_elements(By.CSS_SELECTOR, 'a[class="thumbnail product-thumbnail"]')[site_lamp_num].get_attribute("href")
         driver.get(lamp)
 
-        quantity = driver.find_element(By.CSS_SELECTOR, 'div[class="product-quantities"] span').get_attribute("data-stock")
-
         # if there are 0 products in stock, it is not added
         try:
+            quantity = driver.find_element(By.CSS_SELECTOR, 'div[class="product-quantities"] span').get_attribute(
+                "data-stock")
             amount = random.randint(1, int(quantity) - 1)
             input_amount = driver.find_element(By.CSS_SELECTOR, 'div[class="qty"] input')
             input_amount.send_keys(Keys.DELETE)
@@ -79,9 +80,9 @@ def addLampsToCart(category_url, category_lamps_count):
 
 
 def deleteOneProductFromCart():
-    driver.get("https://localhost/pl/koszyk")
+    driver.get("https://localhost/koszyk")
 
-    # MOZNA EWENTUALNIE ZROBIC ZEBY WYRZUCALO PRODUKT O LOSOWYM INDEKSIE A NIE ZAWSZE PIERWSZY
+    # removing the first product on the list from the cart
     time.sleep(1)
     driver.find_element(By.CSS_SELECTOR, 'i[class="material-icons float-xs-left"]').click()
 
@@ -155,8 +156,7 @@ def chooseDelivery():
 
 
 def choosePayment():
-    # BYC MOZE DO ZMIANY BO JAK TO ROBILEM TO BYLO JESZCZE PLACENIE CZEKAMI, TUTAJ JEST USTAWIONE W SKRYPCIE
-    # ZEBY BYLO WYBRANE PLACENIE PRZELEWEM
+    # payment on delivery
     try:
         driver.find_elements(By.CSS_SELECTOR, 'div[class="payment-option clearfix"] input')[1].click()
     except:
@@ -171,21 +171,6 @@ def choosePayment():
 def checkOrderStatus(email, password):
     my_account = driver.find_element(By.CSS_SELECTOR, 'a[class="account"]').get_attribute("href")
     driver.get(my_account)
-
-    # TODO: TO MOZE NIEPOTRZEBNE, sometimes you had to log into your account
-    try:
-        login_field = driver.find_element(By.CSS_SELECTOR, 'input[id="field-email"]')
-        login_field.clear()
-        login_field.send_keys(email)
-
-        password_field = driver.find_element(By.CSS_SELECTOR, 'input[id="field-password"]')
-        password_field.clear()
-        password_field.send_keys(password)
-
-        # logging in to the account
-        driver.find_element(By.CSS_SELECTOR, 'button[id="submit-login"]').click()
-    except:
-        pass
 
     # history and details of the order
     order_histories = driver.find_element(By.CSS_SELECTOR, 'a[id="history-link"]').get_attribute("href")
