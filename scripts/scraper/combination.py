@@ -15,7 +15,7 @@ class Combination:
             self.attributes,
             self.values,
             self.product.reference + self.reference_suffix, #Supplier reference
-            self.product.reference + self.reference_suffix, #Reference
+            '', #Reference
             '', #EAN13
             '', #UPC
             '', #MPN

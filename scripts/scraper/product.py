@@ -188,7 +188,7 @@ def get_product(url, category):
         name=name,
         categories=category.name,
         price=price,
-        reference=reference,
+        reference=reference.strip(),
         delivery=delivery_time,
         producer=producer,
         quantity=quantity,
