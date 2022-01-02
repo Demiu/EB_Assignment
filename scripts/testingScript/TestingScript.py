@@ -119,7 +119,8 @@ def createAccount():
     # processing of personal data
     driver.find_element(By.CSS_SELECTOR, 'input[name="customer_privacy"]').click()
     # agree to the terms and conditions
-    driver.find_element(By.CSS_SELECTOR, 'input[name="psgdpr"]').click()
+    #driver.find_element(By.CSS_SELECTOR, 'input[name="psgdpr"]').click()
+    driver.find_element(By.CSS_SELECTOR, 'span[class="VIiyi"]').click()
 
     driver.find_element(By.CSS_SELECTOR, 'button[name = "continue"]').click()
 
