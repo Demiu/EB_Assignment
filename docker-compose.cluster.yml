@@ -1,14 +1,14 @@
 version: "3.9"
 services:
   presta:
-    image: grudos/alabaster
+    image: grudos/be_171974_alabaster
     environment:
       PS_HANDLE_DYNAMIC_DOMAIN: 1
       ADMIN_MAIL: prestashop@prestashop.pl
       ADMIN_PASSWD: prestashop
       PS_ERASE_DB: 0
       PS_INSTALL_DB: 0
-      DB_SERVER: admin-mysql_db
+      DB_SERVER: actina15.maas
       DB_PORT: 3306
       DB_USER: BE_171974
       DB_PASSWD: password
