@@ -1,5 +1,7 @@
 FROM prestashop/prestashop:1.7
 
+# WORKDIR /var/www/html
+
 RUN rm -rf *
 
 COPY volumes/presta/var/www/html/ ./
