@@ -18,7 +18,7 @@ driver = webdriver.Chrome(service=s)
 driver.maximize_window()
 
 added_lamps_count = 10
-categories_urls = ["https://localhost/120-lampy-zewnetrzne-sufitowe", "https://localhost/150-oswietlenie-garderoby"]
+categories_urls = ["https://localhost:1975/index.php?id_category=120&controller=category", "https://localhost:1975/index.php?id_category=150&controller=category"]
 lamp_count_on_site = 12
 
 first_category_lamps_count = 5
@@ -82,7 +82,7 @@ def addLampsToCart(category_url, category_lamps_count):
 
 
 def deleteOneProductFromCart():
-    driver.get("https://localhost/koszyk")
+    driver.get("https://localhost:1975/index.php?controller=cart&action=show")
 
     # removing the first product on the list from the cart
     time.sleep(1)

@@ -1,7 +1,7 @@
 <?php return array (
   'parameters' => 
   array (
-    'database_host' => 'admina15.maas',
+    'database_host' => 'actina15.maas',
     'database_port' => '3306',
     'database_name' => 'BE_171974_DB',
     'database_user' => 'BE_171974',
