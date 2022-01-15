@@ -7,5 +7,6 @@ scripts/seleniumDriver
 
 volumes/db
 volumes/presta/var/www/html/var/cache
+volumes/presta/var/www/html/var/logs
 volumes/presta/var/www/html/admin123456/import
 
