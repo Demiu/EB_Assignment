@@ -19,7 +19,7 @@ s = Service(r"{}".format(path))
 driver = webdriver.Chrome(service=s)
 driver.maximize_window()
 
-admin_panel = "https://localhost/admin123456"
+admin_panel = "https://localhost:1975/admin123456/index.php?controller=AdminLogin&token=76f7b42121a6d3cf12584239197bee92"
 login_admin = "prestashop@prestashop.pl"
 password_admin = "prestashop"
 

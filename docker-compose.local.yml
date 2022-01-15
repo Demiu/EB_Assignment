@@ -24,8 +24,8 @@ services:
       DB_SERVER: db
       DB_PORT: 3306
     ports:
-      - "8080:80"
-      - "443:443"
+      - "1974:80"
+      - "1975:443"
     volumes:
       - ./volumes/presta/var/www/html:/var/www/html
     #restart: always
